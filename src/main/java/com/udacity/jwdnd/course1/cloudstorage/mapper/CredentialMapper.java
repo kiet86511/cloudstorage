@@ -18,7 +18,7 @@ public interface CredentialMapper {
 	@Options(useGeneratedKeys = true, keyProperty = "credentialId")
 	int insert(Credential credential);
 	
-	@Select("SELECT * FROM CREDENTIALS")
+	@Select("SELECT * FROM CREDENTIALS WHERE userId = #{userId}")
 	List<Credential> selectAll(Integer userId);
 	
 	@Select("SELECT * FROM CREDENTIALS WHERE credentialId = #{credentialId}")

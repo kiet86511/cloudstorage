@@ -22,9 +22,9 @@ public interface NoteMapper {
 	int update(Note note);
 
 	@Delete("DELETE FROM NOTES WHERE noteId = #{noteId}")
-	void delete(int noteId);
+	void delete(Integer noteId);
 
-	@Select("SELECT * FROM NOTES")
+	@Select("SELECT * FROM NOTES WHERE userId = #{userId}")
 	List<Note> selectAll(Integer userId);
 
 	@Select("SELECT * FROM NOTES WHERE noteId = #{noteId}")

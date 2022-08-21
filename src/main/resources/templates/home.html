@@ -60,7 +60,7 @@
 										<a target="_blank" th:href="@{'/file/download/' + ${file.fileId}}"
 											class="btn btn-success">View</a>
 										<a th:href="@{'/file/delete/' + ${file.fileId}}"
-											class="btn btn-danger">Delete</a>
+											id="file-delete" class="btn btn-danger">Delete</a>
 									</td>
 									<th scope="row" th:text="${file.fileName}">
 
@@ -156,11 +156,11 @@
 							<tbody>
 								<tr th:each="credential : ${credentials}">
 									<td>
-										<button type="button" class="btn btn-success"
+										<button type="button" class="btn btn-success" id="view-credential-btn"
 										 th:attr="onclick=|showCredentialModal('${credential.credentialId}', '${credential.url}', '${credential.username}', '${credential.decryptedPassword}')| ">
 										     Edit
 										 </button>
-										<a th:href="@{'/credential/delete/' + ${credential.credentialId}}" class="btn btn-danger">Delete</a>
+										<a th:href="@{'/credential/delete/' + ${credential.credentialId}}" id="delete-credential-btn" class="btn btn-danger">Delete</a>
 									</td>
 									<th th:text="${credential.url}" scope="row">Example Credential URL</th>
 									<td th:text="${credential.username}">Example Credential Username</td>
@@ -203,7 +203,7 @@
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-									<button type="button" class="btn btn-primary"
+									<button type="button" class="btn btn-primary" id="save-credential"
 										onclick="$('#credentialSubmit').click();">Save changes</button>
 								</div>
 							</div>

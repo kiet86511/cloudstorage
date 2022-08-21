@@ -1,6 +1,7 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -40,13 +41,13 @@ class CloudStorageApplicationTests {
 	@AfterEach
 	public void afterEach() {
 		if (this.driver != null) {
-			driver.quit();
+			this.driver.quit();
 		}
 	}
 
 	@Test
 	public void getLoginPage() throws InterruptedException {
-		driver.get("http://localhost:" + this.port + "/login");
+		this.driver.get("http://localhost:" + this.port + "/login");
 		Assertions.assertEquals("Login", driver.getTitle());
 	}
 
@@ -88,6 +89,12 @@ class CloudStorageApplicationTests {
 		WebElement buttonSignUp = driver.findElement(By.id("buttonSignUp"));
 		buttonSignUp.click();
 
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		/*
 		 * Check that the sign up was successful. // You may have to modify the element
 		 * "success-msg" and the sign-up // success message below depening on the rest
@@ -189,7 +196,7 @@ class CloudStorageApplicationTests {
 
 		// Try to upload an arbitrary large file
 		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
-		String fileName = "UploadFile.xlsx";
+		String fileName = "upload5m.zip";
 
 		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("fileUpload")));
 		WebElement fileSelectButton = driver.findElement(By.id("fileUpload"));
@@ -197,13 +204,13 @@ class CloudStorageApplicationTests {
 
 		WebElement uploadButton = driver.findElement(By.id("uploadButton"));
 		uploadButton.click();
+
 		try {
 			webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("success")));
 		} catch (TimeoutException e) {
 			System.out.println("Large File upload failed");
 		}
-		Assertions.assertTrue(driver.getPageSource().contains("UploadFile.xlsx"));
-
+		Assertions.assertFalse(driver.getPageSource().contains("HTTP Status 403 – Forbidden"));
 	}
 
 	/**
@@ -212,59 +219,54 @@ class CloudStorageApplicationTests {
 	@Test
 	public void testViewUploadedFile() {
 		// Create a test count
-		doMockSignUp("Success Login", "Test", "KietNQ", "KietNQ");
-		doLogIn("KietNQ", "KietNQ");
+		doMockSignUp("Success Login", "Test", "ViewFile", "ViewFile");
+		doLogIn("ViewFile", "ViewFile");
 
 		// Upload a valid file
 		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
 		webDriverWait.until(ExpectedConditions.titleContains("Home"));
-		String fileName = "UploadFile.xlsx";
+		String fileName = "ViewUpLoadFile.xlsx";
 
 		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("fileUpload")));
 		WebElement fileSelectButton = driver.findElement(By.id("fileUpload"));
 		fileSelectButton.sendKeys(new File(fileName).getAbsolutePath());
 
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("uploadButton")));
 		WebElement uploadButton = driver.findElement(By.id("uploadButton"));
 		uploadButton.click();
 
-		webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("success")));
-		WebElement backToHomeButton = driver.findElement(By.linkText("here"));
-		backToHomeButton.click();
-
 		webDriverWait.until(ExpectedConditions.titleContains("Home"));
-		Assertions.assertTrue(driver.getPageSource().contains("UploadFile.xlsx"));
+		Assertions.assertTrue(driver.getPageSource().contains("ViewUpLoadFile.xlsx"));
 	}
 
-//	/**
-//	 * Test case for delete file
-//	 */
-//	@Test
-//	public void testDeleteFile() {
-//		// Create a test count
-//		doMockSignUp("Success Login", "Test", "KietNQ", "KietNQ");
-//		doLogIn("KietNQ", "KietNQ");
-//
-//		// Upload a valid file
-//		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
-//		webDriverWait.until(ExpectedConditions.titleContains("Home"));
-//		String fileName = "UploadFile.xlsx";
-//		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("fileUpload")));
-//		WebElement fileSelectButton = driver.findElement(By.id("fileUpload"));
-//		fileSelectButton.sendKeys(new File(fileName).getAbsolutePath());
-//
-//		WebElement uploadButton = driver.findElement(By.id("uploadButton"));
-//		uploadButton.click();
-//
-//		webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.id("success")));
-//		WebElement backToHomeButton = driver.findElement(By.linkText("here"));
-//		backToHomeButton.click();
-//
-//		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("fileUpload")));
-//		WebElement deleteButton = driver.findElement(By.linkText("Delete"));
-//		deleteButton.click();
-//
-//		Assertions.assertTrue(!driver.getPageSource().contains("UploadFile.xlsx"));
-//	}
+	/**
+	 * Test case for delete file
+	 */
+	@Test
+	public void testDeleteFile() {
+		// Create a test count
+		doMockSignUp("Success Login", "Test", "DELETEFILE", "DELETEFILE");
+		doLogIn("DELETEFILE", "DELETEFILE");
+
+		// Upload a valid file
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+		String fileName = "fileDelete.xlsx";
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("fileUpload")));
+		WebElement fileSelectButton = driver.findElement(By.id("fileUpload"));
+		fileSelectButton.sendKeys(new File(fileName).getAbsolutePath());
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("uploadButton")));
+		WebElement uploadButton = driver.findElement(By.id("uploadButton"));
+		uploadButton.click();
+		
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("file-delete")));
+		WebElement deleteFile = driver.findElement(By.id("file-delete"));
+		deleteFile.click();
+
+		webDriverWait.until(ExpectedConditions.titleContains("Home"));
+		Assertions.assertFalse(driver.getPageSource().contains("UploadFile.xlsx"));
+	}
 
 	/**
 	 * Test case for adding note
@@ -272,28 +274,30 @@ class CloudStorageApplicationTests {
 	@Test
 	public void testAddNote() {
 		// Create a test count
-		doMockSignUp("Success File", "Test", "KietNQ", "KietNQ");
-		doLogIn("KietNQ", "KietNQ");
+		doMockSignUp("Success File", "Test", "KietNQAN", "KietNQAN");
+		doLogIn("KietNQAN", "KietNQAN");
 
 		// Upload a note
 		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
 		WebElement noteTab = driver.findElement(By.id("nav-notes-tab"));
-		WebElement noteDescriptionTxt = driver.findElement(By.id("note-description"));
-		WebElement addNewNoteBtn = webDriverWait
-				.until(ExpectedConditions.visibilityOfElementLocated(By.id("new-note")));
-		WebElement noteTitleTxt = webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("noteModal")));
-		WebElement saveChangesBtn = driver.findElement(By.xpath(null));
 		noteTab.click();
 
-//		WebElement addNewNoteBtn = driver.findElement(By.id("new-note"));
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("new-note")));
+		WebElement addNewNoteBtn = driver.findElement(By.id("new-note"));
 		addNewNoteBtn.click();
 
-//		WebElement noteTitleTxt = driver.findElement(By.id("note-title"));
+		webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("noteModal")));
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-title")));
+		WebElement noteTitleTxt = driver.findElement(By.id("note-title"));
 		noteTitleTxt.sendKeys("Test add note title");
 
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-description")));
+		WebElement noteDescriptionTxt = driver.findElement(By.id("note-description"));
 		noteDescriptionTxt.sendKeys("Test add note description");
+
+		WebElement saveChangesBtn = driver.findElement(By.id("save-note-btn"));
 		saveChangesBtn.click();
-		noteTab.click();
+
 		Assertions.assertTrue(driver.getPageSource().contains("Test add note title"));
 	}
 
@@ -303,8 +307,8 @@ class CloudStorageApplicationTests {
 	@Test
 	public void testEditNote() {
 		// Create a test count
-		doMockSignUp("Success File", "Test", "KietNQ", "KietNQ");
-		doLogIn("KietNQ", "KietNQ");
+		doMockSignUp("Success File", "Test", "KietNQEN", "KietNQEN");
+		doLogIn("KietNQEN", "KietNQEN");
 
 		// Upload a note
 		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
@@ -317,31 +321,47 @@ class CloudStorageApplicationTests {
 		addNewNoteBtn.click();
 
 		webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("noteModal")));
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-title")));
 		WebElement noteTitleTxt = driver.findElement(By.id("note-title"));
-		noteTitleTxt.sendKeys("Test edit note title");
+		noteTitleTxt.sendKeys("Test add note title");
 
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-description")));
 		WebElement noteDescriptionTxt = driver.findElement(By.id("note-description"));
 		noteDescriptionTxt.sendKeys("Test add note description");
 
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("save-note-btn")));
 		WebElement saveChangesBtn = driver.findElement(By.id("save-note-btn"));
 		saveChangesBtn.click();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nav-notes-tab")));
+		noteTab = driver.findElement(By.id("nav-notes-tab"));
 		noteTab.click();
+
 		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("view-note-btn")));
 		WebElement viewNoteBtn = driver.findElement(By.id("view-note-btn"));
 		viewNoteBtn.click();
 
-//		webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("noteModal")));
+		webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("noteModal")));
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-title")));
 		noteTitleTxt = driver.findElement(By.id("note-title"));
 		noteTitleTxt.clear();
 		noteTitleTxt.sendKeys("Test edited note title");
 
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-description")));
 		noteDescriptionTxt = driver.findElement(By.id("note-description"));
 		noteDescriptionTxt.clear();
 		noteDescriptionTxt.sendKeys("Test add note description Editted");
 
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("save-note-btn")));
 		saveChangesBtn = driver.findElement(By.id("save-note-btn"));
 		saveChangesBtn.click();
-		Assertions.assertTrue(driver.getPageSource().contains("Test edited note title"));
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nav-notes-tab")));
+		noteTab = driver.findElement(By.id("nav-notes-tab"));
+		noteTab.click();
+
+		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+		Assertions.assertTrue(driver.getPageSource().contains("Test edited note tit"));
 	}
 
 	/**
@@ -350,11 +370,12 @@ class CloudStorageApplicationTests {
 	@Test
 	public void testDeleteNote() {
 		// Create a test count
-		doMockSignUp("Success", "Test", "KietNQ", "KietNQ");
-		doLogIn("KietNQ", "KietNQ");
+		doMockSignUp("Success File", "Test", "KietNQDN", "KietNQDN");
+		doLogIn("KietNQDN", "KietNQDN");
 
 		// Upload a note
 		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nav-notes-tab")));
 		WebElement noteTab = driver.findElement(By.id("nav-notes-tab"));
 		noteTab.click();
 
@@ -363,20 +384,28 @@ class CloudStorageApplicationTests {
 		addNewNoteBtn.click();
 
 		webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("noteModal")));
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-title")));
 		WebElement noteTitleTxt = driver.findElement(By.id("note-title"));
 		noteTitleTxt.sendKeys("Test add note title");
 
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-description")));
 		WebElement noteDescriptionTxt = driver.findElement(By.id("note-description"));
 		noteDescriptionTxt.sendKeys("Test add note description");
 
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("save-note-btn")));
 		WebElement saveChangesBtn = driver.findElement(By.id("save-note-btn"));
 		saveChangesBtn.click();
 
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nav-notes-tab")));
+		WebElement noteTab2 = driver.findElement(By.id("nav-notes-tab"));
+		noteTab2.click();
+
 		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("view-note-btn")));
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("delete-note")));
 		WebElement deleteBtn = driver.findElement(By.id("delete-note"));
 		deleteBtn.click();
 
-		webDriverWait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("view-note-btn")));
+//		webDriverWait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("view-note-btn")));
 		Assertions.assertFalse(driver.getPageSource().contains("Test add note title"));
 	}
 
@@ -386,8 +415,8 @@ class CloudStorageApplicationTests {
 	@Test
 	public void testAddCredential() {
 		// Create a test count
-		doMockSignUp("Success", "Test", "KietNQ", "KietNQ");
-		doLogIn("KietNQ", "KietNQ");
+		doMockSignUp("Success", "Test", "KietNQAC", "KietNQAC");
+		doLogIn("KietNQAC", "KietNQAC");
 
 		// Upload a note
 		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
@@ -399,13 +428,21 @@ class CloudStorageApplicationTests {
 		addNewCredentialBtn.click();
 
 		webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("credentialModal")));
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-url")));
 		WebElement credentialUrl = driver.findElement(By.id("credential-url"));
 		credentialUrl.sendKeys("add url");
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-username")));
 		WebElement credentialUsername = driver.findElement(By.id("credential-username"));
-		credentialUsername.sendKeys("add username");
+		credentialUsername.sendKeys("add username AC");
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-password")));
 		WebElement credentialPassword = driver.findElement(By.id("credential-password"));
 		credentialPassword.sendKeys("addPassword");
-		WebElement saveChangesBtn = driver.findElement(By.id("credentialSubmit"));
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("save-credential")));
+		WebElement saveChangesBtn = driver.findElement(By.id("save-credential"));
 		saveChangesBtn.click();
 
 		Assertions.assertTrue(driver.getPageSource().contains("add url"));
@@ -417,8 +454,8 @@ class CloudStorageApplicationTests {
 	@Test
 	public void testEditCredential() {
 		// Create a test count
-		doMockSignUp("Success", "Test", "KietNQ", "KietNQ");
-		doLogIn("KietNQ", "KietNQ");
+		doMockSignUp("Success Edit credential", "Test", "KietNQEC", "KietNQEC");
+		doLogIn("KietNQEC", "KietNQEC");
 
 		// Upload a note
 		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
@@ -432,28 +469,38 @@ class CloudStorageApplicationTests {
 		webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("credentialModal")));
 		WebElement credentialUrl = driver.findElement(By.id("credential-url"));
 		credentialUrl.sendKeys("add url");
+
 		WebElement credentialUsername = driver.findElement(By.id("credential-username"));
-		credentialUsername.sendKeys("add username");
+		credentialUsername.sendKeys("add username EC");
+
 		WebElement credentialPassword = driver.findElement(By.id("credential-password"));
 		credentialPassword.sendKeys("addPassword");
-		WebElement saveChangesBtn = driver.findElement(By.id("credentialSubmit"));
+		WebElement saveChangesBtn = driver.findElement(By.id("save-credential"));
 		saveChangesBtn.click();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nav-credentials-tab")));
+		WebElement credentialsTab1 = driver.findElement(By.id("nav-credentials-tab"));
+		credentialsTab1.click();
 
 		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("view-credential-btn")));
 		WebElement viewCredentialBtn = driver.findElement(By.id("view-credential-btn"));
 		viewCredentialBtn.click();
 
 		webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("credentialModal")));
+
 		credentialUrl = driver.findElement(By.id("credential-url"));
 		credentialUrl.clear();
 		credentialUrl.sendKeys("edit url");
+
 		credentialUsername = driver.findElement(By.id("credential-username"));
 		credentialUsername.clear();
-		credentialUsername.sendKeys("edit username");
+		credentialUsername.sendKeys("edit username EC");
+
 		credentialPassword = driver.findElement(By.id("credential-password"));
 		credentialPassword.clear();
 		credentialPassword.sendKeys("editPassword");
-		saveChangesBtn = driver.findElement(By.id("credentialSubmit"));
+
+		saveChangesBtn = driver.findElement(By.id("save-credential"));
 		saveChangesBtn.click();
 
 		Assertions.assertTrue(driver.getPageSource().contains("edit url"));
@@ -465,8 +512,8 @@ class CloudStorageApplicationTests {
 	@Test
 	public void testDeleteCredential() {
 		// Create a test count
-		doMockSignUp("Success", "Test", "KietNQ", "KietNQ");
-		doLogIn("KietNQ", "KietNQ");
+		doMockSignUp("Success", "Test", "KietNQDC", "KietNQDC");
+		doLogIn("KietNQDC", "KietNQDC");
 
 		// Upload a note
 		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
@@ -480,18 +527,23 @@ class CloudStorageApplicationTests {
 		webDriverWait.until(ExpectedConditions.elementToBeClickable(By.id("credentialModal")));
 		WebElement credentialUrl = driver.findElement(By.id("credential-url"));
 		credentialUrl.sendKeys("add url");
+
 		WebElement credentialUsername = driver.findElement(By.id("credential-username"));
-		credentialUsername.sendKeys("add username");
+		credentialUsername.sendKeys("add username DC");
+
 		WebElement credentialPassword = driver.findElement(By.id("credential-password"));
 		credentialPassword.sendKeys("addPassword");
-		WebElement saveChangesBtn = driver.findElement(By.id("credentialSubmit"));
+		WebElement saveChangesBtn = driver.findElement(By.id("save-credential"));
 		saveChangesBtn.click();
 
-		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("view-credential-btn")));
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nav-credentials-tab")));
+		WebElement credentialsTab1 = driver.findElement(By.id("nav-credentials-tab"));
+		credentialsTab1.click();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("delete-credential-btn")));
 		WebElement deleteCredentialBtn = driver.findElement(By.id("delete-credential-btn"));
 		deleteCredentialBtn.click();
 
-		webDriverWait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("view-credential-btn")));
 		Assertions.assertFalse(driver.getPageSource().contains("add url"));
 	}
 
