@@ -213,6 +213,28 @@ class CloudStorageApplicationTests {
 		Assertions.assertFalse(driver.getPageSource().contains("HTTP Status 403 – Forbidden"));
 	}
 
+	@Test
+	public void testLogout() {
+		doMockSignUp("Large File", "Test", "LogOut", "123");
+		doLogIn("LogOut", "123");
+		
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("logout")));
+		WebElement logoutButton = driver.findElement(By.id("logout"));
+		logoutButton.click();
+		
+		driver.get("http://localhost:" + this.port + "/home");
+		
+		Assertions.assertNotEquals("http://localhost:" + this.port + "/home", driver.getCurrentUrl());
+	}
+	
+	@Test
+	public void testNoLogin() {
+		driver.get("http://localhost:" + this.port + "/home");
+		Assertions.assertNotEquals("http://localhost:" + this.port + "/home", driver.getCurrentUrl());
+	}
+	
 	/**
 	 * Test case for view uploaded file
 	 */
