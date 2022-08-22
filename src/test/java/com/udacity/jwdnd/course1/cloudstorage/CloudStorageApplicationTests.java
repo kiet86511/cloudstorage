@@ -1,7 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
 import java.io.File;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -252,7 +251,6 @@ class CloudStorageApplicationTests {
 		WebElement uploadButton = driver.findElement(By.id("uploadButton"));
 		uploadButton.click();
 
-		webDriverWait.until(ExpectedConditions.titleContains("Home"));
 		Assertions.assertTrue(driver.getPageSource().contains("success"));
 	}
 
@@ -277,11 +275,13 @@ class CloudStorageApplicationTests {
 		WebElement uploadButton = driver.findElement(By.id("uploadButton"));
 		uploadButton.click();
 		
+		driver.get("http://localhost:" + this.port + "/home");
+		
 		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("file-delete")));
 		WebElement deleteFile = driver.findElement(By.id("file-delete"));
 		deleteFile.click();
 
-		Assertions.assertFalse(driver.getPageSource().contains("success"));
+		Assertions.assertTrue(driver.getPageSource().contains("success"));
 	}
 
 	/**
@@ -323,7 +323,7 @@ class CloudStorageApplicationTests {
 	@Test
 	public void testEditNote() {
 		// Create a test count
-		doMockSignUp("Success File", "Test", "KietNQEN", "KietNQEN");
+		doMockSignUp("Success Note", "Test", "KietNQEN", "KietNQEN");
 		doLogIn("KietNQEN", "KietNQEN");
 
 		// Upload a note
@@ -382,7 +382,7 @@ class CloudStorageApplicationTests {
 	@Test
 	public void testDeleteNote() {
 		// Create a test count
-		doMockSignUp("Success File", "Test", "KietNQDN", "KietNQDN");
+		doMockSignUp("Success Note", "Test", "KietNQDN", "KietNQDN");
 		doLogIn("KietNQDN", "KietNQDN");
 
 		// Upload a note
