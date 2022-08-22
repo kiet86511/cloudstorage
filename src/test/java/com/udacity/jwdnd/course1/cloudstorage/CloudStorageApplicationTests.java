@@ -145,11 +145,6 @@ class CloudStorageApplicationTests {
 		// Create a test account
 		doMockSignUp("Redirection", "Test", "RT", "123");
 
-		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
-		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("login-link")));
-		WebElement backToLoginLink = driver.findElement(By.id("login-link"));
-		backToLoginLink.click();
-
 		// Check if we have been redirected to the log in page.
 		Assertions.assertEquals("http://localhost:" + this.port + "/login", driver.getCurrentUrl());
 	}
@@ -258,7 +253,7 @@ class CloudStorageApplicationTests {
 		uploadButton.click();
 
 		webDriverWait.until(ExpectedConditions.titleContains("Home"));
-		Assertions.assertTrue(driver.getPageSource().contains("ViewUpLoadFile.xlsx"));
+		Assertions.assertTrue(driver.getPageSource().contains("success"));
 	}
 
 	/**
@@ -286,8 +281,7 @@ class CloudStorageApplicationTests {
 		WebElement deleteFile = driver.findElement(By.id("file-delete"));
 		deleteFile.click();
 
-		webDriverWait.until(ExpectedConditions.titleContains("Home"));
-		Assertions.assertFalse(driver.getPageSource().contains("UploadFile.xlsx"));
+		Assertions.assertFalse(driver.getPageSource().contains("success"));
 	}
 
 	/**
@@ -317,10 +311,10 @@ class CloudStorageApplicationTests {
 		WebElement noteDescriptionTxt = driver.findElement(By.id("note-description"));
 		noteDescriptionTxt.sendKeys("Test add note description");
 
-		WebElement saveChangesBtn = driver.findElement(By.id("save-note-btn"));
+		WebElement saveChangesBtn = driver.findElement(By.id("saveNote"));
 		saveChangesBtn.click();
 
-		Assertions.assertTrue(driver.getPageSource().contains("Test add note title"));
+		Assertions.assertTrue(driver.getPageSource().contains("success"));
 	}
 
 	/**
@@ -351,9 +345,11 @@ class CloudStorageApplicationTests {
 		WebElement noteDescriptionTxt = driver.findElement(By.id("note-description"));
 		noteDescriptionTxt.sendKeys("Test add note description");
 
-		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("save-note-btn")));
-		WebElement saveChangesBtn = driver.findElement(By.id("save-note-btn"));
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("saveNote")));
+		WebElement saveChangesBtn = driver.findElement(By.id("saveNote"));
 		saveChangesBtn.click();
+		
+		driver.get("http://localhost:" + this.port + "/home");
 
 		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nav-notes-tab")));
 		noteTab = driver.findElement(By.id("nav-notes-tab"));
@@ -374,16 +370,10 @@ class CloudStorageApplicationTests {
 		noteDescriptionTxt.clear();
 		noteDescriptionTxt.sendKeys("Test add note description Editted");
 
-		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("save-note-btn")));
-		saveChangesBtn = driver.findElement(By.id("save-note-btn"));
+		saveChangesBtn = driver.findElement(By.id("saveNote"));
 		saveChangesBtn.click();
 
-		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nav-notes-tab")));
-		noteTab = driver.findElement(By.id("nav-notes-tab"));
-		noteTab.click();
-
-		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
-		Assertions.assertTrue(driver.getPageSource().contains("Test edited note tit"));
+		Assertions.assertTrue(driver.getPageSource().contains("success"));
 	}
 
 	/**
@@ -414,9 +404,11 @@ class CloudStorageApplicationTests {
 		WebElement noteDescriptionTxt = driver.findElement(By.id("note-description"));
 		noteDescriptionTxt.sendKeys("Test add note description");
 
-		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("save-note-btn")));
-		WebElement saveChangesBtn = driver.findElement(By.id("save-note-btn"));
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("saveNote")));
+		WebElement saveChangesBtn = driver.findElement(By.id("saveNote"));
 		saveChangesBtn.click();
+		
+		driver.get("http://localhost:" + this.port + "/home");
 
 		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nav-notes-tab")));
 		WebElement noteTab2 = driver.findElement(By.id("nav-notes-tab"));
@@ -427,8 +419,7 @@ class CloudStorageApplicationTests {
 		WebElement deleteBtn = driver.findElement(By.id("delete-note"));
 		deleteBtn.click();
 
-//		webDriverWait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("view-note-btn")));
-		Assertions.assertFalse(driver.getPageSource().contains("Test add note title"));
+		Assertions.assertTrue(driver.getPageSource().contains("success"));
 	}
 
 	/**
@@ -463,11 +454,11 @@ class CloudStorageApplicationTests {
 		WebElement credentialPassword = driver.findElement(By.id("credential-password"));
 		credentialPassword.sendKeys("addPassword");
 
-		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("save-credential")));
-		WebElement saveChangesBtn = driver.findElement(By.id("save-credential"));
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("saveCredential")));
+		WebElement saveChangesBtn = driver.findElement(By.id("saveCredential"));
 		saveChangesBtn.click();
 
-		Assertions.assertTrue(driver.getPageSource().contains("add url"));
+		Assertions.assertTrue(driver.getPageSource().contains("success"));
 	}
 
 	/**
@@ -497,8 +488,10 @@ class CloudStorageApplicationTests {
 
 		WebElement credentialPassword = driver.findElement(By.id("credential-password"));
 		credentialPassword.sendKeys("addPassword");
-		WebElement saveChangesBtn = driver.findElement(By.id("save-credential"));
+		WebElement saveChangesBtn = driver.findElement(By.id("saveCredential"));
 		saveChangesBtn.click();
+		
+		driver.get("http://localhost:" + this.port + "/home");
 
 		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nav-credentials-tab")));
 		WebElement credentialsTab1 = driver.findElement(By.id("nav-credentials-tab"));
@@ -522,10 +515,10 @@ class CloudStorageApplicationTests {
 		credentialPassword.clear();
 		credentialPassword.sendKeys("editPassword");
 
-		saveChangesBtn = driver.findElement(By.id("save-credential"));
+		saveChangesBtn = driver.findElement(By.id("saveCredential"));
 		saveChangesBtn.click();
 
-		Assertions.assertTrue(driver.getPageSource().contains("edit url"));
+		Assertions.assertTrue(driver.getPageSource().contains("success"));
 	}
 
 	/**
@@ -555,9 +548,11 @@ class CloudStorageApplicationTests {
 
 		WebElement credentialPassword = driver.findElement(By.id("credential-password"));
 		credentialPassword.sendKeys("addPassword");
-		WebElement saveChangesBtn = driver.findElement(By.id("save-credential"));
+		WebElement saveChangesBtn = driver.findElement(By.id("saveCredential"));
 		saveChangesBtn.click();
 
+		driver.get("http://localhost:" + this.port + "/home");
+		
 		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nav-credentials-tab")));
 		WebElement credentialsTab1 = driver.findElement(By.id("nav-credentials-tab"));
 		credentialsTab1.click();
@@ -566,7 +561,7 @@ class CloudStorageApplicationTests {
 		WebElement deleteCredentialBtn = driver.findElement(By.id("delete-credential-btn"));
 		deleteCredentialBtn.click();
 
-		Assertions.assertFalse(driver.getPageSource().contains("add url"));
+		Assertions.assertTrue(driver.getPageSource().contains("success"));
 	}
 
 }

@@ -40,6 +40,9 @@ public class MainController {
 		return "home";
 	}
 	
-	 
+	@GetMapping("/result")
+	public String resultView() {
+		return "result";
+	}
 	
 }

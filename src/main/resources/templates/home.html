@@ -125,13 +125,13 @@
 											<textarea th:field="*{noteDescription}" class="form-control" name="noteDescription" id="note-description"
 												rows="5" maxlength="1000" required></textarea>
 										</div>
-										<button id="noteSubmit" type="submit" class="d-none"></button>
+										<button id="noteSubmit" type="submit" onsubmit="showNoteTab()" class="d-none"></button>
 									</form>
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-									<button type="button" class="btn btn-primary"
-										onclick="$('#noteSubmit').click();" id="save-note-btn">Save changes</button>
+									<button type="button" class="btn btn-primary" id="saveNote"
+										onclick="$('#noteSubmit').click();">Save changes</button>
 								</div>
 							</div>
 						</div>
@@ -142,7 +142,6 @@
 						id="new-credential" onclick="showCredentialModal()">
 						+ Add a New Credential
 					</button>
-
 					<div class="table-responsive">
 						<table class="table table-striped" th:object="${credentials}" id="credentialTable">
 							<thead>
@@ -203,7 +202,7 @@
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-									<button type="button" class="btn btn-primary" id="save-credential"
+									<button type="button" class="btn btn-primary" id="saveCredential"
 										onclick="$('#credentialSubmit').click();">Save changes</button>
 								</div>
 							</div>
@@ -235,6 +234,10 @@
 			$('#credential-username').val(username ? username : '');
 			$('#credential-password').val(password ? password : '');
 			$('#credentialModal').modal('show');
+		}
+		
+		function showNoteTab(){
+			$('#nav-notes-tab').click();
 		}
 	</script>
 </body>
